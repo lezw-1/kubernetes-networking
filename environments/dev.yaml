@@ -8,7 +8,7 @@ gateway:
     enabled: true
     selfSigned: false
   hosts:
-    domain: ""
-    email: ""
+    domain: "test.de"
+    email: "test@test.de"
   nodePort:
     enabled: false
