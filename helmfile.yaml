@@ -11,6 +11,10 @@ environments:
 
 ---
 
+repositories:
+  - name: jetstack
+    url: https://charts.jetstack.io
+
 releases:
 
   ## Cert-manager ##
