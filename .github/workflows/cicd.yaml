@@ -34,8 +34,9 @@ jobs:
       - name: Lint charts
         run: |
           helm lint ./charts/gateway-controller
-          helm lint ./charts/certs
+          helm lint ./charts/certs-manager
           helm lint ./charts/gateway
+          helm lint ./charts/gateway-class
 
       - name: Dry-run helmfile
         uses: helmfile/helmfile-action@v2.2.0
@@ -64,26 +65,29 @@ jobs:
           cloudfleet auth add-profile token default ${{ secrets.CF_ORG_ID }} ${{ secrets.CF_ACCESS_TOKEN }} ${{ secrets.CF_ACCESS_TOKEN_SECRET }}
           cloudfleet clusters kubeconfig ${{ secrets.CF_CLUSTER_ID }}
 
-#      - name: Install Gateway API CRDs
-#        run: |
-#          kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.0/standard-install.yaml
-
-      - name: Deploy gateway-controller
+      - name: Deploy certs-manager
         uses: helmfile/helmfile-action@v2.2.0
         with:
           helmfile-args: >-
             -e ${{ env.HELM_ENV }}
             -f ./helmfile.yaml apply
-            -l name=gateway-controller
-#            --skip-crds
+            -l name=certs-manager
 
-      - name: Deploy certs
+      - name: Deploy envoy-controller
         uses: helmfile/helmfile-action@v2.2.0
         with:
           helmfile-args: >-
             -e ${{ env.HELM_ENV }}
             -f ./helmfile.yaml apply
-            -l name=certs
+            -l name=envoy-controller
+
+      - name: Deploy gateway-class
+        uses: helmfile/helmfile-action@v2.2.0
+        with:
+          helmfile-args: >-
+            -e ${{ env.HELM_ENV }}
+            -f ./helmfile.yaml apply
+            -l name=gateway-class
 
       - name: Deploy gateway
         uses: helmfile/helmfile-action@v2.2.0
