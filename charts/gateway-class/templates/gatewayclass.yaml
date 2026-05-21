@@ -1,4 +1,3 @@
-# Envoy GatewayClass: Binds Gateway resources to the Envoy controller
 apiVersion: gateway.networking.k8s.io/v1
 kind: GatewayClass
 metadata:

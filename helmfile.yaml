@@ -1,7 +1,3 @@
-repositories:
-  - name: jetstack
-    url: https://charts.jetstack.io
-
 environments:
   local:
     values:
@@ -17,52 +13,37 @@ environments:
 
 releases:
 
-  # cert-manager: Provisions and renews TLS certificates via Let's Encrypt
-  - name: certs
-    chart: jetstack/cert-manager
-    version: "v1.16.2"
+  ## Cert-manager ##
+
+  - name: certs-manager
+    chart: ./charts/certs-manager
     namespace: networking
     createNamespace: true
-    values:
-      - charts/certs/values.yaml
 
-  # Envoy Gateway controller: Orchestrates all gateway APIs
-  - name: gateway-controller
+  ## Gateway API ##
+
+  # Install the Gateway API CRDs and Envoy Gateway Controller
+  - name: envoy-controller
     chart: ./charts/gateway-controller
     namespace: networking
     createNamespace: true
-    hooks:
-      - events: ["presync"]
-        command: "kubectl"
-        args:
-          - "apply"
-          - "--server-side"
-          - "--force-conflicts"
-          - "-f"
-          - "charts/gateway-controller/crds/"
 
-  # Envoy Gateway resources: Defines GatewayClass, Gateway, and TLS certificates
+  # Install the Envoy Gateway Class and bind to the Envoy controller
+  - name: gateway-class
+    chart: ./charts/gateway-class
+    namespace: networking
+    createNamespace: true
+    needs:
+      - networking/envoy-controller
+
+  # Install the Envoy Gateway
   - name: gateway
     chart: ./charts/gateway
     namespace: networking
     createNamespace: true
     needs:
-      - networking/gateway-controller
-      - networking/certs
-    hooks:
-      - events: ["presync"]
-        command: "kubectl"
-        args:
-          - "wait"
-          - "--for=condition=Established"
-          - "crd/backends.gateway.envoyproxy.io"
-          - "crd/backendtrafficpolicies.gateway.envoyproxy.io"
-          - "crd/clienttrafficpolicies.gateway.envoyproxy.io"
-          - "crd/envoyextensionpolicies.gateway.envoyproxy.io"
-          - "crd/envoypatchpolicies.gateway.envoyproxy.io"
-          - "crd/envoyproxies.gateway.envoyproxy.io"
-          - "crd/httproutefilters.gateway.envoyproxy.io"
-          - "crd/securitypolicies.gateway.envoyproxy.io"
-          - "--timeout=120s"
+      - networking/certs-manager
+      - networking/gateway-class
+
     values:
       - environments/{{ .Environment.Name }}.yaml
