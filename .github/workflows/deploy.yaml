@@ -1,0 +1,77 @@
+# Networking — Reusable deployment workflow
+#
+# Deploys cert-manager and Envoy Gateway via migration/kubernetes-networking/helmfile.yaml.
+# Called by the main pipeline; not triggered directly.
+
+name: Deploy networking
+
+on:
+  workflow_call:
+    inputs:
+      helm-env:
+        description: Helmfile environment (dev or prod)
+        required: true
+        type: string
+    secrets:
+      CF_ORG_ID:
+        required: true
+      CF_ACCESS_TOKEN:
+        required: true
+      CF_ACCESS_TOKEN_SECRET:
+        required: true
+      CF_CLUSTER_ID:
+        required: true
+      CERT_EMAIL:
+        required: true
+      HOST_NAME:
+        required: true
+
+jobs:
+  deploy-networking:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Cloudfleet CLI
+        run: |
+          curl -fsSL https://downloads.cloudfleet.ai/apt/pubkey.gpg | sudo tee /usr/share/keyrings/cloudfleet-archive-keyring.gpg >/dev/null
+          echo "deb [signed-by=/usr/share/keyrings/cloudfleet-archive-keyring.gpg] https://downloads.cloudfleet.ai/apt stable main" | sudo tee /etc/apt/sources.list.d/cloudfleet.list
+          sudo apt-get update && sudo apt-get install -y cloudfleet
+
+      - name: Create Cluster Config
+        run: |
+          cloudfleet auth add-profile token default ${{ secrets.CF_ORG_ID }} ${{ secrets.CF_ACCESS_TOKEN }} ${{ secrets.CF_ACCESS_TOKEN_SECRET }}
+          cloudfleet clusters kubeconfig ${{ secrets.CF_CLUSTER_ID }}
+
+      - name: Install Gateway API CRDs
+        run: |
+          # Install Gateway API standard CRDs
+          kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.0/standard-install.yaml
+
+      - name: Deploy gateway-controller
+        uses: helmfile/helmfile-action@v2.2.0
+        with:
+          helmfile-args: >-
+            -e ${{ inputs.helm-env }}
+            -f ./migration/kubernetes-networking/helmfile.yaml apply
+            -l name=gateway-controller
+            --skip-crds
+
+      - name: Deploy certs
+        uses: helmfile/helmfile-action@v2.2.0
+        with:
+          helmfile-args: >-
+            -e ${{ inputs.helm-env }}
+            -f ./migration/kubernetes-networking/helmfile.yaml apply
+            -l name=certs
+
+      - name: Deploy gateway
+        uses: helmfile/helmfile-action@v2.2.0
+        with:
+          helmfile-args: >-
+            -e ${{ inputs.helm-env }}
+            -f ./migration/kubernetes-networking/helmfile.yaml apply
+            -l name=gateway
+            --set gateway.hosts.email=${{ secrets.CERT_EMAIL }}
+            --set gateway.hosts.domain=${{ secrets.HOST_NAME }}

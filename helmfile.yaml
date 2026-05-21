@@ -1,0 +1,45 @@
+repositories:
+  - name: jetstack
+    url: https://charts.jetstack.io
+
+environments:
+  local:
+    values:
+      - environments/local.yaml
+  dev:
+    values:
+      - environments/dev.yaml
+  prod:
+    values:
+      - environments/prod.yaml
+
+---
+
+releases:
+
+  # cert-manager: Provisions and renews TLS certificates via Let's Encrypt
+  - name: certs
+    chart: jetstack/cert-manager
+    namespace: networking
+    createNamespace: true
+    needs:
+      - networking/gateway-controller
+    values:
+      - charts/certs/values.yaml
+
+  # Envoy Gateway controller: Orchestrates all gateway APIs
+  - name: gateway-controller
+    chart: ./charts/gateway-controller
+    namespace: networking
+    createNamespace: true
+
+  # Envoy Gateway resources: Defines GatewayClass, Gateway, and TLS certificates
+  - name: gateway
+    chart: ./charts/gateway
+    namespace: networking
+    createNamespace: true
+    needs:
+      - networking/gateway-controller
+      - networking/certs
+    values:
+      - environments/{{ .Environment.Name }}.yaml

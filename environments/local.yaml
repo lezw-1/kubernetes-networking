@@ -1,0 +1,20 @@
+# global
+global:
+  environment: local
+
+# certs
+crds:
+  enabled: true
+
+# gateway
+gateway:
+  tls:
+    enabled: true
+    selfSigned: true
+  hosts:
+    domain: ""
+    email: ""
+  nodePort:
+    enabled: true
+    http: 32080
+    https: 32443

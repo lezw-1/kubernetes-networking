@@ -1,0 +1,18 @@
+# global
+global:
+  environment: prod
+
+# certs
+crds:
+  enabled: true
+
+# gateway
+gateway:
+  tls:
+    enabled: true
+    selfSigned: false
+  hosts:
+    domain: ""
+    email: ""
+  nodePort:
+    enabled: false
