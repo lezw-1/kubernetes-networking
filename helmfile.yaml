@@ -20,10 +20,9 @@ releases:
   # cert-manager: Provisions and renews TLS certificates via Let's Encrypt
   - name: certs
     chart: jetstack/cert-manager
+    version: "v1.16.2"
     namespace: networking
     createNamespace: true
-    needs:
-      - networking/gateway-controller
     values:
       - charts/certs/values.yaml
 
@@ -32,6 +31,15 @@ releases:
     chart: ./charts/gateway-controller
     namespace: networking
     createNamespace: true
+    hooks:
+      - events: ["presync"]
+        command: "kubectl"
+        args:
+          - "apply"
+          - "--server-side"
+          - "--force-conflicts"
+          - "-f"
+          - "charts/gateway-controller/crds/"
 
   # Envoy Gateway resources: Defines GatewayClass, Gateway, and TLS certificates
   - name: gateway
@@ -41,5 +49,20 @@ releases:
     needs:
       - networking/gateway-controller
       - networking/certs
+    hooks:
+      - events: ["presync"]
+        command: "kubectl"
+        args:
+          - "wait"
+          - "--for=condition=Established"
+          - "crd/backends.gateway.envoyproxy.io"
+          - "crd/backendtrafficpolicies.gateway.envoyproxy.io"
+          - "crd/clienttrafficpolicies.gateway.envoyproxy.io"
+          - "crd/envoyextensionpolicies.gateway.envoyproxy.io"
+          - "crd/envoypatchpolicies.gateway.envoyproxy.io"
+          - "crd/envoyproxies.gateway.envoyproxy.io"
+          - "crd/httproutefilters.gateway.envoyproxy.io"
+          - "crd/securitypolicies.gateway.envoyproxy.io"
+          - "--timeout=120s"
     values:
       - environments/{{ .Environment.Name }}.yaml

@@ -1,0 +1,96 @@
+# Networking — CI/CD Pipeline
+#
+# Triggers:
+#   - Push to prod/dev: validate + deploy
+#   - PR to prod/dev:   validate only (lint + dry-run)
+#
+# Required secrets:
+#   - CF_ORG_ID:              Cloudfleet organization ID
+#   - CF_ACCESS_TOKEN:        Cloudfleet token ID
+#   - CF_ACCESS_TOKEN_SECRET: Cloudfleet token secret
+#   - CF_CLUSTER_ID:          Cloudfleet cluster ID
+#   - CERT_EMAIL:             Email domain is registered with
+#   - HOST_NAME:              Domain name of host
+
+name: Networking pipeline
+
+on:
+  push:
+    branches: [prod, dev]
+  pull_request:
+    branches: [prod, dev]
+
+env:
+  # For PRs use the target branch (base_ref); for pushes use the branch name (ref_name)
+  HELM_ENV: ${{ (github.base_ref || github.ref_name) == 'prod' && 'prod' || 'dev' }}
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Lint charts
+        run: |
+          helm lint ./charts/gateway-controller
+          helm lint ./charts/certs
+          helm lint ./charts/gateway
+
+      - name: Dry-run helmfile
+        uses: helmfile/helmfile-action@v2.2.0
+        with:
+          helmfile-args: >-
+            -e ${{ env.HELM_ENV }}
+            -f ./helmfile.yaml
+            template
+
+  deploy:
+    if: github.event_name == 'push'
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Cloudfleet CLI
+        run: |
+          curl -fsSL https://downloads.cloudfleet.ai/apt/pubkey.gpg | sudo tee /usr/share/keyrings/cloudfleet-archive-keyring.gpg >/dev/null
+          echo "deb [signed-by=/usr/share/keyrings/cloudfleet-archive-keyring.gpg] https://downloads.cloudfleet.ai/apt stable main" | sudo tee /etc/apt/sources.list.d/cloudfleet.list
+          sudo apt-get update && sudo apt-get install -y cloudfleet
+
+      - name: Create Cluster Config
+        run: |
+          cloudfleet auth add-profile token default ${{ secrets.CF_ORG_ID }} ${{ secrets.CF_ACCESS_TOKEN }} ${{ secrets.CF_ACCESS_TOKEN_SECRET }}
+          cloudfleet clusters kubeconfig ${{ secrets.CF_CLUSTER_ID }}
+
+#      - name: Install Gateway API CRDs
+#        run: |
+#          kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.0/standard-install.yaml
+
+      - name: Deploy gateway-controller
+        uses: helmfile/helmfile-action@v2.2.0
+        with:
+          helmfile-args: >-
+            -e ${{ env.HELM_ENV }}
+            -f ./helmfile.yaml apply
+            -l name=gateway-controller
+#            --skip-crds
+
+      - name: Deploy certs
+        uses: helmfile/helmfile-action@v2.2.0
+        with:
+          helmfile-args: >-
+            -e ${{ env.HELM_ENV }}
+            -f ./helmfile.yaml apply
+            -l name=certs
+
+      - name: Deploy gateway
+        uses: helmfile/helmfile-action@v2.2.0
+        with:
+          helmfile-args: >-
+            -e ${{ env.HELM_ENV }}
+            -f ./helmfile.yaml apply
+            -l name=gateway
+            --set gateway.hosts.email=${{ secrets.CERT_EMAIL }}
+            --set gateway.hosts.domain=${{ secrets.HOST_NAME }}

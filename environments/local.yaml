@@ -2,10 +2,6 @@
 global:
   environment: local
 
-# certs
-crds:
-  enabled: true
-
 # gateway
 gateway:
   tls:
