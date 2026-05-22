@@ -70,7 +70,7 @@ jobs:
         with:
           helmfile-args: >-
             -e ${{ env.HELM_ENV }}
-            -f ./helmfile.yaml apply
+            -f ./helmfile.yaml sync
             -l name=certs-manager
 
       - name: Deploy envoy-controller
@@ -78,7 +78,7 @@ jobs:
         with:
           helmfile-args: >-
             -e ${{ env.HELM_ENV }}
-            -f ./helmfile.yaml apply
+            -f ./helmfile.yaml sync
             -l name=envoy-controller
 
       - name: Deploy gateway-class
@@ -86,7 +86,7 @@ jobs:
         with:
           helmfile-args: >-
             -e ${{ env.HELM_ENV }}
-            -f ./helmfile.yaml apply
+            -f ./helmfile.yaml sync
             -l name=gateway-class
 
       - name: Deploy gateway
@@ -94,7 +94,7 @@ jobs:
         with:
           helmfile-args: >-
             -e ${{ env.HELM_ENV }}
-            -f ./helmfile.yaml apply
+            -f ./helmfile.yaml sync
             -l name=gateway
             --set gateway.hosts.email=${{ secrets.CERT_EMAIL }}
             --set gateway.hosts.domain=${{ secrets.HOST_NAME }}

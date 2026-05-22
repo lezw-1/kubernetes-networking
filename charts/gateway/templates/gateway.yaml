@@ -26,6 +26,7 @@ spec:
                 operator: In
                 values:
                   - networking
+                  - ai-system-dev
   {{- if .Values.gateway.tls.enabled }}
     # HTTPS listener — terminates TLS, routes to app namespace
     - name: https
@@ -44,4 +45,5 @@ spec:
                 operator: In
                 values:
                   - networking
+                  - ai-system-dev
   {{- end }}
