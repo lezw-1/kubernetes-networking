@@ -24,7 +24,7 @@ spec:
       - http01:
           gatewayHTTPRoute:
             parentRefs:
-              - name: agent
+              - name: cluster-gateway
                 namespace: {{ .Release.Namespace }}
                 kind: Gateway
 {{- end }}
