@@ -1,13 +1,13 @@
 environments:
   local:
     values:
-      - environments/local.yaml
+      - helm/environments/local.yaml
   dev:
     values:
-      - environments/dev.yaml
+      - helm/environments/dev.yaml
   prod:
     values:
-      - environments/prod.yaml
+      - helm/environments/prod.yaml
 
 ---
 
@@ -17,37 +17,38 @@ repositories:
 
 releases:
 
+  ## Namespace ##
+
+  - name: namespace
+    chart: ./helm/charts/namespace
+    namespace: default
+
   ## Cert-manager ##
 
   - name: certs-manager
-    chart: ./charts/certs-manager
+    chart: ./helm/charts/certs-manager
     namespace: networking
-    createNamespace: true
+    needs: [namespace]
 
   ## Gateway API ##
 
   # Install the Gateway API CRDs and Envoy Gateway Controller
   - name: envoy-controller
-    chart: ./charts/gateway-controller
+    chart: ./helm/charts/gateway-controller
     namespace: networking
-    createNamespace: true
+    needs: [namespace]
 
   # Install the Envoy Gateway Class and bind to the Envoy controller
   - name: gateway-class
-    chart: ./charts/gateway-class
+    chart: ./helm/charts/gateway-class
     namespace: networking
-    createNamespace: true
-    needs:
-      - networking/envoy-controller
+    needs: [namespace, networking/envoy-controller]
 
   # Install the Envoy Gateway
   - name: gateway
-    chart: ./charts/gateway
+    chart: ./helm/charts/gateway
     namespace: networking
-    createNamespace: true
-    needs:
-      - networking/certs-manager
-      - networking/gateway-class
+    needs: [namespace, networking/certs-manager, networking/gateway-class]
 
     values:
-      - environments/{{ .Environment.Name }}.yaml
+      - helm/environments/{{ .Environment.Name }}.yaml

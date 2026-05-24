@@ -13,13 +13,3 @@ gateway:
     enabled: false
     http: 32080
     https: 32443
-  backends:
-    api:
-      name: api
-      port: 8000
-    frontend:
-      name: frontend
-      port: 80
-    grafana:
-      name: monitoring-grafana
-      port: 80

@@ -33,10 +33,10 @@ jobs:
 
       - name: Lint charts
         run: |
-          helm lint ./charts/gateway-controller
-          helm lint ./charts/certs-manager
-          helm lint ./charts/gateway
-          helm lint ./charts/gateway-class
+          helm lint ./helm/charts/gateway-controller
+          helm lint ./helm/charts/certs-manager
+          helm lint ./helm/charts/gateway
+          helm lint ./helm/charts/gateway-class
 
       - name: Dry-run helmfile
         uses: helmfile/helmfile-action@v2.2.0

@@ -22,11 +22,10 @@ spec:
           from: Selector
           selector:
             matchExpressions:
-              - key: kubernetes.io/metadata.name
+              - key: team
                 operator: In
                 values:
-                  - networking
-                  - ai-system-dev
+                  - gateway-1
   {{- if .Values.gateway.tls.enabled }}
     # HTTPS listener — terminates TLS, routes to app namespace
     - name: https
@@ -40,10 +39,6 @@ spec:
         namespaces:
           from: Selector
           selector:
-            matchExpressions:
-              - key: kubernetes.io/metadata.name
-                operator: In
-                values:
-                  - networking
-                  - ai-system-dev
+            matchLabels:
+              team: gateway-1
   {{- end }}
