@@ -1,6 +1,6 @@
 # Kubernetes Networking
 
-Kubernetes Gateway API infrastructure for ingress, TLS termination, and certificate management.
+Envoy Gateway API and Cert-Manager infrastructure to handle ingresses to kubernetes cluster.
 
 ## Architecture
 
@@ -9,6 +9,8 @@ Kubernetes Gateway API infrastructure for ingress, TLS termination, and certific
 ## Components
 
 - **Gateway Controller** — Envoy Gateway controller for ingress and TLS routing
+- **Gateway Class** — Envoy GatewayClass resource defining the gateway implementation
+- **Gateway** — Gateway resource with TLS termination, HTTP/HTTPS listeners, routing rules, and certificate management
 - **Certs** — cert-manager for TLS certificate management
 
 ## Deployment
@@ -63,3 +65,6 @@ https://prod.{domain}
 
 - [Cloudfleet](https://cloudfleet.ai/) — managed Kubernetes provider
 - [Hetzner](https://www.hetzner.com/) — cloud infrastructure provider
+- [cert-manager](https://cert-manager.io/) — TLS certificate management
+- [Kubernetes Gateway API](https://kubernetes.io/docs/concepts/services-networking/gateway/) — Gateway API documentation
+- [Envoy Gateway](https://gateway.envoyproxy.io/) — Envoy-based Gateway API implementation

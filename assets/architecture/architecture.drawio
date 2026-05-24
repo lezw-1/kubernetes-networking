@@ -5,33 +5,50 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="user" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" value="User" vertex="1">
-          <mxGeometry height="60" width="80" x="470" y="560" as="geometry" />
+          <mxGeometry height="60" width="80" x="290" y="310" as="geometry" />
         </mxCell>
         <mxCell id="edge-user-gateway" edge="1" parent="1" source="user" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="gateway">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="k8s" parent="1" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" value="Kubernetes" vertex="1">
-          <mxGeometry height="360" width="400" x="310" y="160" as="geometry" />
+          <mxGeometry height="250" width="540" x="50" y="40" as="geometry" />
         </mxCell>
-        <mxCell id="gateway" parent="k8s" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Gateway" vertex="1">
-          <mxGeometry height="40" width="120" x="140" y="260" as="geometry" />
-        </mxCell>
-        <mxCell id="edge-controller-gateway" edge="1" parent="k8s" source="gateway-controller" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="gateway">
+        <mxCell id="bSvq_rcSD4K1MOV9qvIF-16" edge="1" parent="k8s" source="gateway" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="bSvq_rcSD4K1MOV9qvIF-15">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="certmanager" parent="k8s" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="CertManager" vertex="1">
-          <mxGeometry height="40" width="120" x="140" y="160" as="geometry" />
+        <mxCell id="gateway" parent="k8s" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="Gateway" vertex="1">
+          <mxGeometry height="40" width="120" x="230" y="180" as="geometry" />
         </mxCell>
-        <mxCell id="gateway-controller" parent="k8s" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Gateway Controller" vertex="1">
-          <mxGeometry height="40" width="140" x="130" y="60" as="geometry" />
+        <mxCell id="certmanager" parent="k8s" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="CertManager" vertex="1">
+          <mxGeometry height="40" width="120" x="400" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway-controller" parent="k8s" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="Gateway Controller" vertex="1">
+          <mxGeometry height="40" width="140" x="30" y="80" as="geometry" />
         </mxCell>
         <mxCell id="edge-certmanager-gateway" edge="1" parent="k8s" source="certmanager" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="gateway">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="letsencrypt" parent="1" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="Let&#39;s Encrypt" vertex="1">
-          <mxGeometry height="80" width="140" x="100" y="200" as="geometry" />
+        <mxCell id="bSvq_rcSD4K1MOV9qvIF-1" parent="k8s" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" value="application" vertex="1">
+          <mxGeometry height="110" width="180" x="200" y="50" as="geometry">
+            <mxRectangle height="30" width="60" x="120" y="70" as="alternateBounds" />
+          </mxGeometry>
         </mxCell>
-        <mxCell id="edge-certmanager-le" edge="1" parent="1" source="certmanager" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="letsencrypt">
+        <mxCell id="bSvq_rcSD4K1MOV9qvIF-15" parent="bSvq_rcSD4K1MOV9qvIF-1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Frontend" vertex="1">
+          <mxGeometry height="40" width="120" x="30" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="gatewayclass" parent="k8s" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="GatewayClass" vertex="1">
+          <mxGeometry height="40" width="120" x="40" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-controller-gatewayclass" edge="1" parent="k8s" source="gateway-controller" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="gatewayclass">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-gatewayclass-gateway" edge="1" parent="k8s" source="gatewayclass" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="gateway">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="letsencrypt" parent="1" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" value="Let&#39;s Encrypt" vertex="1">
+          <mxGeometry height="90" width="140" x="600" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-certmanager-le" edge="1" parent="1" source="certmanager" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.16;entryY=0.55;entryDx=0;entryDy=0;entryPerimeter=0;" target="letsencrypt">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
