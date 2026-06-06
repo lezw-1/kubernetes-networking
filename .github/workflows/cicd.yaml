@@ -65,6 +65,14 @@ jobs:
           cloudfleet auth add-profile token default ${{ secrets.CF_ORG_ID }} ${{ secrets.CF_ACCESS_TOKEN }} ${{ secrets.CF_ACCESS_TOKEN_SECRET }}
           cloudfleet clusters kubeconfig ${{ secrets.CF_CLUSTER_ID }}
 
+      - name: Deploy namespace
+        uses: helmfile/helmfile-action@v2.2.0
+        with:
+          helmfile-args: >-
+            -e ${{ env.HELM_ENV }}
+            -f ./helm/helmfile.yaml sync
+            -l name=namespace
+
       - name: Deploy certs-manager
         uses: helmfile/helmfile-action@v2.2.0
         with:

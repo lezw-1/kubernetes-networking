@@ -22,14 +22,13 @@ releases:
   - name: namespace
     chart: ./charts/namespace
     namespace: networking
-    createNamespace: true
 
   ## Cert-manager ##
 
   - name: certs-manager
     chart: ./charts/certs-manager
     namespace: networking
-    needs: [networking/namespace]
+    needs: [namespace]
 
   ## Gateway API ##
 
@@ -37,19 +36,19 @@ releases:
   - name: envoy-controller
     chart: ./charts/gateway-controller
     namespace: networking
-    needs: [networking/namespace]
+    needs: [namespace]
 
   # Install the Envoy Gateway Class and bind to the Envoy controller
   - name: gateway-class
     chart: ./charts/gateway-class
     namespace: networking
-    needs: [networking/namespace, networking/envoy-controller]
+    needs: [namespace]
 
   # Install the Envoy Gateway
   - name: gateway
     chart: ./charts/gateway
     namespace: networking
-    needs: [networking/namespace, networking/certs-manager, networking/gateway-class]
+    needs: [namespace]
 
     values:
       - environments/{{ .Environment.Name }}.yaml
