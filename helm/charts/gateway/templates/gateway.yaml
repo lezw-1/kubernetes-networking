@@ -40,7 +40,7 @@ spec:
           from: Selector
           selector:
             matchLabels:
-              team: gateway-1
+              team: gateway-1  # namespaces must have this label for HTTPRoutes to attach to this gateway
   {{- end }}
 ---
 apiVersion: gateway.envoyproxy.io/v1alpha1

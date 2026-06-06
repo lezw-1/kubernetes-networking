@@ -72,6 +72,13 @@ jobs:
             -e ${{ env.HELM_ENV }}
             -f ./helm/helmfile.yaml sync
             -l name=namespace
+      
+      # Required in CI/CD: Helm's createNamespace creates a bare namespace without labels; this patches it
+      - name: Label namespace
+        run: |
+          kubectl label namespace networking \
+            team=gateway-1 \
+            --overwrite
 
       - name: Deploy certs-manager
         uses: helmfile/helmfile-action@v2.2.0
