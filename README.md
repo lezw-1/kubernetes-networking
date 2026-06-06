@@ -25,7 +25,7 @@ Build and deploy local images:
 
 ```sh
 kubectl config use-context rancher-desktop
-helmfile -f helmfile.yaml -e local sync
+helmfile -f helm/helmfile.yaml -e local sync
 ```
 
 Access at:

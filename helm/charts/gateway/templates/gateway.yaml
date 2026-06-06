@@ -42,3 +42,17 @@ spec:
             matchLabels:
               team: gateway-1
   {{- end }}
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: gateway-timeout
+  namespace: {{ .Release.Namespace }}
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: cluster-gateway
+  timeout:
+    http:
+      requestTimeout: 600s
