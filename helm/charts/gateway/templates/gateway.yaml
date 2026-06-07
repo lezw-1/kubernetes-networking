@@ -55,4 +55,4 @@ spec:
       name: cluster-gateway
   timeout:
     http:
-      requestTimeout: 600s
+      requestTimeout: 1200s
