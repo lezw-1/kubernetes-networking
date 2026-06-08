@@ -12,3 +12,5 @@ gateway:
     email: "test@test.de"
   nodePort:
     enabled: false
+  timeout:
+    requestTimeout: 1800s

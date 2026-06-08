@@ -55,4 +55,4 @@ spec:
       name: cluster-gateway
   timeout:
     http:
-      requestTimeout: 1200s
+      requestTimeout: {{ .Values.gateway.timeout.requestTimeout }}

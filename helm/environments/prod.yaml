@@ -12,3 +12,5 @@ gateway:
     email: ""
   nodePort:
     enabled: false
+  timeout:
+    requestTimeout: 1800s
